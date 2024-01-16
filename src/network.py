@@ -29,12 +29,11 @@ class Network:
 
     def _step(self, X, Y, eta):
         N = X.shape[1]
-        P = self.predict(X)
-
-        # gradiant descent
+        P = self.forward(X)
         g = (P - Y) / N
-        for layer in reversed(self.layers):
-            g = layer.backward(g)
+        self.backward(g)
+
+        for layer in self.layers:
             layer.step(eta)
 
     def fit(self, X, Y, n_epoch=10, n_batch=100, eta=lambda t: 0.1):
@@ -46,7 +45,16 @@ class Network:
                 self._step(X_batch, Y_batch, eta(t))
                 t += 1
 
-    def predict(self, X):
+    def forward(self, X):
         for layer in self.layers:
             X = layer.forward(X)
+        return softmax(X)
+
+    def backward(self, g):
+        for layer in reversed(self.layers):
+            g = layer.backward(g)
+
+    def predict(self, X):
+        for layer in self.layers:
+            X = layer.predict(X)
         return softmax(X)

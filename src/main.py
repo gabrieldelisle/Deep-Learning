@@ -50,22 +50,22 @@ def split_train_test(X, Y, ratio=0.8):
 
 
 if __name__ == "__main__":
-    from .layer import DenseLayer, SoftMaxLayer
+    from .layer import BatchNormalizationLayer, DenseLayer, ReLuLayer
     from .network import Network
 
+    regularisation_factor = 5e-3
     X, Y = load_all()
     print(X.shape, Y.shape)
     X_train, Y_train, X_test, Y_test = split_train_test(X, Y)
-
     model = Network(
         [
-            DenseLayer(3072, 50, 5e-3),
-            SoftMaxLayer(),
-            DenseLayer(50, 10, 5e-3),
-            SoftMaxLayer(),
+            DenseLayer(3072, 50, regularisation_factor),
+            BatchNormalizationLayer(50, regularisation_factor),
+            ReLuLayer(),
+            DenseLayer(50, 10, regularisation_factor),
+            ReLuLayer(),
         ]
     )
 
-    print(accuracy(Y_test, model.predict(X_test)))
     model.fit(X_train, Y_train)
     print(accuracy(Y_test, model.predict(X_test)))
