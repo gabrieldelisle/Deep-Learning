@@ -27,7 +27,7 @@ class Network:
     def __init__(self, layers: list[Layer]):
         self.layers = layers
 
-    def _step(self, X, Y, eta):
+    def step(self, X, Y, eta):
         N = X.shape[1]
         P = self.forward(X)
         g = (P - Y) / N
@@ -42,8 +42,9 @@ class Network:
         for epoch in range(n_epoch):
             print("epoch", epoch + 1)
             for X_batch, Y_batch in generate_batches(X, Y, n_batch):
-                self._step(X_batch, Y_batch, eta(t))
+                self.step(X_batch, Y_batch, eta(t))
                 t += 1
+            print("cost", self.cost(X, Y))
 
     def forward(self, X):
         for layer in self.layers:
@@ -58,3 +59,8 @@ class Network:
         for layer in self.layers:
             X = layer.predict(X)
         return softmax(X)
+
+    def cost(self, X, Y):
+        P = self.predict(X)
+        cross_entropy_loss = np.log(np.sum(Y * P, axis=0))
+        return -np.mean(cross_entropy_loss) + sum(layer.cost() for layer in self.layers)

@@ -121,4 +121,4 @@ class BatchNormalizationLayer(Layer):
         return self.gamma * X + self.beta
 
     def cost(self):
-        return self.regularization_factor * np.sum(self.W**2)
+        return self.regularization_factor * np.sum(self.gamma**2)
