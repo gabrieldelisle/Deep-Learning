@@ -92,14 +92,14 @@ class BatchNormalizationLayer(Layer):
         else:
             self.v_av = self.alpha * self.v_av + (1 - self.alpha) * self.v
 
-        X = (np.diag((self.v + EPSILON) ** -0.5)).dot(X - self.mu)
-        return self.gamma * X + self.beta
+        self.X_tmp = (np.diag((self.v + EPSILON) ** -0.5)).dot(X - self.mu)
+        return self.gamma * self.X_tmp + self.beta
 
     def backward(self, g):
         N = g.shape[1]
         oneN = np.ones((N, 1))
 
-        self.grad_gamma = (g * self.X).dot(oneN)
+        self.grad_gamma = (g * self.X_tmp).dot(oneN)
         self.grad_beta = g.dot(oneN)
 
         g *= self.gamma

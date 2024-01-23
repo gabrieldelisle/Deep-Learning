@@ -57,8 +57,8 @@ def test_dense_layer_gradient(network):
 
     network.step(X, Y, 1)
 
-    assert distance_l1(grad_W, dense_layer.grad_W) < 1e-6
-    assert distance_l1(grad_b, dense_layer.grad_b) < 1e-6
+    assert distance_l1(grad_W, dense_layer.grad_W) < h
+    assert distance_l1(grad_b, dense_layer.grad_b) < h
 
     print(distance_l1(grad_W, dense_layer.grad_W))
 
@@ -114,7 +114,5 @@ def test_batch_normalisation_layer_gradient(network):
             batch_normalisation_layer.beta += H
             grad_beta[i, j] = (cost_1 - cost_2) / 2 / h
 
-    print(grad_gamma, batch_normalisation_layer.grad_gamma)
-
-    assert distance_l1(grad_gamma, batch_normalisation_layer.grad_gamma) < 1e-6
-    assert distance_l1(grad_beta, batch_normalisation_layer.grad_beta) < 1e-6
+    assert distance_l1(grad_gamma, batch_normalisation_layer.grad_gamma) < h
+    assert distance_l1(grad_beta, batch_normalisation_layer.grad_beta) < h

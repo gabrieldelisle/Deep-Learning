@@ -23,7 +23,7 @@ def load_batch(filename):
     return X, Y
 
 
-def load_all():
+def load_training():
     Xs, Ys = [], []
     for i in range(1, 6):
         X, Y = load_batch(f"data_batch_{i}")
@@ -37,35 +37,23 @@ def accuracy(Y, P):
     return np.mean(np.argmax(P, axis=0) == np.argmax(Y, axis=0))
 
 
-def split_train_test(X, Y, ratio=0.8):
-    N = X.shape[1]
-    N_train = int(N * ratio)
-
-    return (
-        X[:, :N_train],
-        Y[:, :N_train],
-        X[:, N_train:],
-        Y[:, N_train:],
-    )
-
-
 if __name__ == "__main__":
     from .layer import BatchNormalizationLayer, DenseLayer, ReLuLayer
     from .network import Network
 
     regularisation_factor = 5e-3
-    X, Y = load_all()
-    print(X.shape, Y.shape)
-    X_train, Y_train, X_test, Y_test = split_train_test(X, Y)
+    X_train, Y_train = load_training()
+    X_test, Y_test = load_batch("test_batch")
+
+    print(X_train.shape, Y_train.shape)
     model = Network(
         [
             DenseLayer(3072, 50, regularisation_factor),
             BatchNormalizationLayer(50, regularisation_factor),
             ReLuLayer(),
             DenseLayer(50, 10, regularisation_factor),
-            ReLuLayer(),
         ]
     )
 
-    model.fit(X_train, Y_train)
+    model.fit(X_train, Y_train, 10)
     print(accuracy(Y_test, model.predict(X_test)))
